@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenCVSetup.cpp">
+    <ClCompile Include="Opdracht1.1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Opdracht 1.2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

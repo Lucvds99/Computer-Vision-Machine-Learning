@@ -28,26 +28,26 @@ using namespace std;
 
 ///////////////  Video  //////////////////////
 
-void main() {
-
-	string path = "Resources/test_video.mp4";
-	VideoCapture cap(path);
-	Mat img;
-
-	while (true) {
-
-		cap.read(img);
-		imshow("Image", img);
-		waitKey(20);
-	}
-}
+//void main() {
+//
+//	string path = "Resources/test_video.mp4";
+//	VideoCapture cap(path);
+//	Mat img;
+//
+//	while (true) {
+//
+//		cap.read(img);
+//		imshow("Image", img);
+//		waitKey(17);
+//	}
+//}
 
 
 /////////////////  Webcam  //////////////////////
 
 //void main() {
 //
-//	VideoCapture cap(0);
+//	VideoCapture cap(1);
 //	Mat img;
 //
 //	while (true) {
