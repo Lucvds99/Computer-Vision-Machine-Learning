@@ -14,7 +14,7 @@ using namespace std;
 
 
 
-/////////////////  Images  //////////////////////
+/////////////////  Black White + Blur  //////////////////////
 
 //void main() {
 //
@@ -36,21 +36,53 @@ using namespace std;
 //	waitKey(0);
 //}
 
-/////////////////  Images  //////////////////////
+/////////////////  Blur and big Blur  //////////////////////
+
+//void main() {
+//
+//	string path = "Resources/Johannusthemannus.png";
+//	Mat img = imread(path);
+//	Mat blur;
+//	Mat blur7;
+//
+//	//Gives a blur effect over the black and white img with a size of a 3 by 3 matrix
+//	GaussianBlur(img, blur, Size(7, 7), 3, 0);
+//	GaussianBlur(img, blur7, Size(7, 7), 7, 0);
+//
+//	imshow("default", img);
+//	imshow("blur", blur);
+//	imshow("blur 7", blur7);
+//	waitKey(0);
+//}
+
+/////////////////  Making our own Filters  //////////////////////
 
 void main() {
 
 	string path = "Resources/Johannusthemannus.png";
 	Mat img = imread(path);
-	Mat blur;
-	Mat blur7;
+	Mat horizontalimg;
+	Mat verticalimg;
+	Mat emboss;
+	
+	Mat horizontal = (Mat_<char>(3, 3) << -1, -1, -1,
+										2, 2, 2,
+										-1, -1, -1);
+	Mat vertical = (Mat_<char>(3, 3) << -1, 2, -1,
+										-1, 2, -1,
+										-1, 2, -1);
 
-	//Gives a blur effect over the black and white img with a size of a 3 by 3 matrix
-	GaussianBlur(img, blur, Size(7, 7), 3, 0);
-	GaussianBlur(img, blur7, Size(7, 7), 7, 0);
+	Mat embossFilter = (Mat_<char>(3, 3) << -2, -1, -0,
+											-1, 1, 1,
+											0, 1, 2);
+	filter2D(img, emboss, 0, embossFilter);
+	filter2D(img, horizontalimg, 0, horizontal);
+	filter2D(img, verticalimg, 0, vertical);
+
 
 	imshow("default", img);
-	imshow("blur", blur);
-	imshow("blur 7", blur7);
+	imshow("emBoss", emboss);
+	imshow("vertical", verticalimg);
+	imshow("horizontal", horizontalimg);
 	waitKey(0);
 }
