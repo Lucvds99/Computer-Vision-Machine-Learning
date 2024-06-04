@@ -12,14 +12,18 @@ void main() {
 	Mat img(512, 512, CV_8UC3, Scalar(255, 255, 255));
 
 	//Draws different shapes with set colors
-	circle(img, Point(150, 400), 100, Scalar(0, 69, 255), FILLED);
-	circle(img, Point(350, 400), 100, Scalar(0, 69, 255), FILLED);
-	rectangle(img, Point(200, 100), Point(300, 400), Scalar(0, 69, 255), FILLED);
-	circle(img, Point(250, 100), 50, Scalar(0, 69, 255), FILLED);
-	line(img, Point(250, 50), Point(250, 60), Scalar(255, 255, 255), 2);
+
+	rectangle(img, Point(200, 50), Point(300, 500), Scalar(139, 188, 216), FILLED);
+	
+	for (int x = 210; x < 300; x += 10) {
+		line(img, Point(x, 50), Point(x, 500), Scalar(0, 0, 0), 1);
+	}
+	circle(img, Point(260, 250), 15, Scalar(0, 127, 14), FILLED);
+
+	
 
 	//writes text with specific Font and Color
-	putText(img, "Bowling alley with 1 pin", Point(200, 500), FONT_HERSHEY_DUPLEX, 0.75, Scalar(0, 0, 0), 2);
+	putText(img, "Bowling alley with 0 pins", Point(200, 500), FONT_HERSHEY_DUPLEX, 0.75, Scalar(0, 0, 0), 2);
 
 	imshow("Image", img);
 	waitKey(0);
