@@ -39,7 +39,6 @@ using namespace std;
 /////////////////  removing small lines  //////////////////////
 
 void main() {
-
 	string path = "Resources/kleurenpatroon1.jpg";
 	Mat img = imread(path), dilateimg, erodeimg;
 
