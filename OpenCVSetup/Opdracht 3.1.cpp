@@ -13,6 +13,7 @@ void getContours(Mat imgDil, Mat img) {
 
 	findContours(imgDil, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 	vector<vector<Point>> conPoly(contours.size());
+
 	vector<Rect> boundRect(contours.size());
 
 	for (int i = 0; i < contours.size(); i++)
@@ -35,7 +36,7 @@ void getContours(Mat imgDil, Mat img) {
 				else { objectType = "rectangle"; }
 			}
 			else if (objCor > 4) { objectType = "circle"; }
-			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
+			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2, 8, hierarchy);
 			rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
 			putText(img, objectType, { boundRect[i].x,boundRect[i].y - 5 }, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
 		}
