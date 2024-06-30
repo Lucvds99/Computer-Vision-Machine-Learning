@@ -19,6 +19,7 @@ void getContours(Mat imgDil, Mat img) {
 	vector<vector<Point>> conPoly(contours.size());
 
 	vector<Rect> boundRect(contours.size());
+	int counter = 0;
 
 	for (int i = 0; i < contours.size(); i++)
 	{
@@ -34,6 +35,11 @@ void getContours(Mat imgDil, Mat img) {
 			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2, 8, hierarchy);
 			rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
 			putText(img, objectType, { boundRect[i].x,boundRect[i].y - 5 }, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
+			Mat numbCrop = img(boundRect[i]);
+
+			imwrite("Resources/Plates/number" + to_string(counter++) + ".png", numbCrop);
+			imshow("crop", numbCrop);
+
 		}
 
 
