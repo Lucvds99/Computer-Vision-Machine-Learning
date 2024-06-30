@@ -26,7 +26,7 @@ void getContours(Mat imgDil, Mat img) {
 		cout << area << endl;
 		string objectType;
 
-		if (area > 10000)
+		if (area > 20000)
 		{
 			float peri = arcLength(contours[i], true);
 			approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
@@ -95,7 +95,7 @@ void main() {
 		imshow("dil1", imgDil);
 		erode(imgDil, erodeimg, erodekernel);
 		imshow("erode", erodeimg);
-		Canny(erodeimg, imgCanny, 15, 40);
+		Canny(erodeimg, imgCanny, 10, 40);
 		imshow("canny", imgCanny);
 		kernel = getStructuringElement(MORPH_RECT, Size(7, 7));
 		dilate(imgCanny, imgDil, kernel);
