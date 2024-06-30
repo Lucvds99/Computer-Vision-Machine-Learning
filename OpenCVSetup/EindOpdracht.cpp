@@ -3,108 +3,100 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/objdetect.hpp>
 #include <iostream>
+#include <algorithm> // for std::sort
 
 using namespace cv;
 using namespace std;
 
-///////////////  Project 3 - License Plate Detector //////////////////////
+// Define the struct
+struct Rectstruct {
+    Rect boundRect;
+    int Xposition;
 
+    // Constructor to initialize the struct
+    Rectstruct(Rect rect, int pos) : boundRect(rect), Xposition(pos) {}
+};
 
-void getContours(Mat imgDil, Mat img) {
-
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-
-	findContours(imgDil, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-	vector<vector<Point>> conPoly(contours.size());
-
-	vector<Rect> boundRect(contours.size());
-	int counter = 0;
-
-	for (int i = 0; i < contours.size(); i++)
-	{
-		int area = contourArea(contours[i]);
-		cout << area << endl;
-		string objectType;
-
-		if (area > 20000 && area < 150000)
-		{
-			float peri = arcLength(contours[i], true);
-			approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
-			boundRect[i] = boundingRect(conPoly[i]);
-			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2, 8, hierarchy);
-			rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
-			putText(img, objectType, { boundRect[i].x,boundRect[i].y - 5 }, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
-			Mat numbCrop = img(boundRect[i]);
-
-			imwrite("Resources/Plates/number" + to_string(counter++) + ".png", numbCrop);
-			imshow("crop", numbCrop);
-
-		}
-
-
-	}
+// Comparator function to sort based on 'Xposition'
+bool compareByPosition(const Rectstruct& a, const Rectstruct& b) {
+    return a.Xposition < b.Xposition; // Ascending order
 }
 
-void main() {
+void getContours(Mat imgDil, Mat img) {
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    findContours(imgDil, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+    vector<vector<Point>> conPoly(contours.size());
+    vector<Rect> boundRect(contours.size());
+    vector<Rectstruct> Rectstructs;
 
-	VideoCapture cap(1);
+    for (size_t i = 0; i < contours.size(); i++) {
+        int area = contourArea(contours[i]);
+        cout << "Area: " << area << endl;
 
-	CascadeClassifier plateCascade;
-	plateCascade.load("Resources/haarcascade_russian_plate_number.xml");
+        if (area > 20000 && area < 150000) {
+            float peri = arcLength(contours[i], true);
+            approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
+            boundRect[i] = boundingRect(conPoly[i]);
+            rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
+            Mat numbCrop = img(boundRect[i]);
 
-	if (plateCascade.empty()) { cout << "XML file not loaded" << endl; }
+            Rectstruct rectStruct(boundRect[i], boundRect[i].x);
+            Rectstructs.push_back(rectStruct);
+        }
+    }
 
-	string path = "Resources/cars/bently.jpg";
-	Mat img = imread(path);
+    // Sort Rectstructs based on Xposition
+    std::sort(Rectstructs.begin(), Rectstructs.end(), compareByPosition);
+    int counter = 0;
 
+    for (const auto& rect : Rectstructs) {
+        Mat imgCrop = img(rect.boundRect);
+        imwrite("Resources/Plates/PlateNumber_" + to_string(counter++) + ".png", imgCrop);
+    }
+}
 
+int main() {
+    VideoCapture cap(1);
 
-	vector<Rect> plates;
+    CascadeClassifier plateCascade;
+    plateCascade.load("Resources/haarcascade_russian_plate_number.xml");
 
-	plateCascade.detectMultiScale(img, plates, 1.1, 10);
+    if (plateCascade.empty()) {
+        cout << "XML file not loaded" << endl;
+        return -1;
+    }
 
-	for (int i = 0; i < plates.size(); i++)
-	{
-		Mat imgCrop = img(plates[i]);
-		//imshow(to_string(i), imgCrop);
-		imwrite("Resources/Plates/" + to_string(i) + ".png", imgCrop);
+    string path = "Resources/cars/multiple.jpg";
+    Mat img = imread(path);
 
-		imshow("crop",imgCrop);
+    vector<Rect> plates;
+    plateCascade.detectMultiScale(img, plates, 1.1, 10);
 
-		Mat imgGray, imgBlur, imgCanny, imgDil, imgErode, imgResize, erodeimg;
+    for (size_t i = 0; i < plates.size(); i++) {
+        Mat imgCrop = img(plates[i]);
 
-		Mat capturedPlate = imgCrop;
-		imshow("captured plate", capturedPlate);
+        Mat imgGray, imgBlur, imgCanny, imgDil, imgResize, erodeimg;
+        Mat capturedPlate = imgCrop;
 
-		Mat kernel = getStructuringElement(MORPH_RECT, Size(21, 21));
-		Mat erodekernel = getStructuringElement(MORPH_RECT, Size(29, 29));
+        Mat kernel = getStructuringElement(MORPH_RECT, Size(21, 21));
+        Mat erodekernel = getStructuringElement(MORPH_RECT, Size(29, 29));
 
+        resize(capturedPlate, imgResize, Size(2840, 1160));
+        cvtColor(imgResize, imgGray, COLOR_BGR2GRAY);
+        GaussianBlur(imgGray, imgBlur, Size(0, 0), 3, 0);
+        dilate(imgBlur, imgDil, kernel);
+        erode(imgDil, erodeimg, erodekernel);
+        Canny(erodeimg, imgCanny, 10, 40);
+        kernel = getStructuringElement(MORPH_RECT, Size(7, 7));
+        dilate(imgCanny, imgDil, kernel);
 
-		resize(capturedPlate, imgResize, Size(2840, 1160));
+        getContours(imgDil, imgResize);
+        resize(imgResize, imgResize, Size(1920, 1080));
 
+        imshow("Image", imgResize);
+    }
 
-		cvtColor(imgResize, imgGray, COLOR_BGR2GRAY);
-		GaussianBlur(imgGray, imgBlur, Size(0, 0), 3, 0);
-		imshow("blur", imgBlur);
-		dilate(imgBlur, imgDil, kernel);
-		imshow("dil1", imgDil);
-		erode(imgDil, erodeimg, erodekernel);
-		imshow("erode", erodeimg);
-		Canny(erodeimg, imgCanny, 10, 40);
-		imshow("canny", imgCanny);
-		kernel = getStructuringElement(MORPH_RECT, Size(7, 7));
-		dilate(imgCanny, imgDil, kernel);
-		imshow("dil2", imgDil);
-
-
-		getContours(imgDil, imgResize);
-
-		imshow("Image", imgResize);
-	}
-
-
-
-	
-	waitKey(0);
+    waitKey(0);
+    return 0;
 }
