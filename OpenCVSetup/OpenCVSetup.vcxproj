@@ -137,8 +137,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EindOpdracht.cpp" />
     <ClCompile Include="Opdracht 1.1.cpp" />
-    <ClCompile Include="Opdracht 3.2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
