@@ -26,20 +26,11 @@ void getContours(Mat imgDil, Mat img) {
 		cout << area << endl;
 		string objectType;
 
-		if (area > 20000)
+		if (area > 20000 && area < 150000)
 		{
 			float peri = arcLength(contours[i], true);
 			approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
 			boundRect[i] = boundingRect(conPoly[i]);
-			int objCor = (int)conPoly[i].size();
-			if (objCor == 3) { objectType = "triangle"; }
-			else if (objCor == 4)
-			{
-				float aspRatio = (float)boundRect[i].width / (float)boundRect[i].height;
-				if (aspRatio > 0.95 && aspRatio < 1.05) { objectType = "scuare"; }
-				else { objectType = "rectangle"; }
-			}
-			else if (objCor > 4) { objectType = "circle"; }
 			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2, 8, hierarchy);
 			rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
 			putText(img, objectType, { boundRect[i].x,boundRect[i].y - 5 }, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
@@ -72,7 +63,6 @@ void main() {
 		Mat imgCrop = img(plates[i]);
 		//imshow(to_string(i), imgCrop);
 		imwrite("Resources/Plates/" + to_string(i) + ".png", imgCrop);
-		rectangle(img, plates[i].tl(), plates[i].br(), Scalar(255, 0, 255), 3);
 
 		imshow("crop",imgCrop);
 
