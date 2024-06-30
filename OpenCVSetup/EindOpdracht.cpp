@@ -67,7 +67,7 @@ int main() {
         return -1;
     }
 
-    string path = "Resources/cars/multiple.jpg";
+    string path = "Resources/cars/bently.jpg";
     Mat img = imread(path);
 
     vector<Rect> plates;
